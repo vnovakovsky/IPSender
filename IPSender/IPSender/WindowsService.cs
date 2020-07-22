@@ -1,6 +1,6 @@
 ﻿using log4net;
 using System;
-using System.Diagnostics;
+using System.Configuration;
 using System.ServiceProcess;
 using System.Threading;
 
@@ -70,10 +70,11 @@ namespace WindowsService
             _log.Debug("WorkerThreadFunc begin");
             while (!_shutdownEvent.WaitOne(0))
             {
-                Thread.Sleep(60000);
                 string ipAddress = "empty";
                 try
                 {
+                    string timeIntervalMs = ConfigurationManager.AppSettings["TimeIntervalMs"];
+                    Thread.Sleep(Int32.Parse(timeIntervalMs));
                     ipAddress = IPSender.IPResolver.GetIP();
                 }
                 catch (Exception e)

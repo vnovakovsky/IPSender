@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
 
@@ -16,7 +15,8 @@ namespace IPSender
             {
                 using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
                 {
-                    var address = Dns.GetHostAddresses("www.google.com")[0];
+                    string urlToDefineNetworkInterface = ConfigurationManager.AppSettings["URLToDefineNetworkInterface"];
+                    var address = Dns.GetHostAddresses(urlToDefineNetworkInterface)[0];
                     socket.Connect(address, 80);
                     IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
                     localIP = endPoint.Address.ToString();
