@@ -61,7 +61,7 @@ namespace WebAPIServer.Tests.Controllers
             ValuesController controller = new ValuesController();
 
             // Act
-            controller.Put(5, "value");
+            controller.Put(5/*, "value"*/);
 
             // Assert
         }

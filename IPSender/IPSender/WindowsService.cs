@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Configuration;
+using HttpClient;
 using System.ServiceProcess;
 using System.Threading;
 
@@ -65,23 +66,31 @@ namespace WindowsService
             _log.Debug("OnStart end");
         }
 
-        private void WorkerThreadFunc()
+        public void WorkerThreadFunc()
         {
             _log.Debug("WorkerThreadFunc begin");
             while (!_shutdownEvent.WaitOne(0))
             {
                 string ipAddress = "empty";
+                string hostName = "empty";
                 try
                 {
                     string timeIntervalMs = ConfigurationManager.AppSettings["TimeIntervalMs"];
                     Thread.Sleep(Int32.Parse(timeIntervalMs));
-                    ipAddress = IPSender.IPResolver.GetIP();
+                    ipAddress = IPSender.Resolver.GetIP();
+                    hostName = IPSender.Resolver.GetHostName();
+                    NetworkParameters networkParameters = new NetworkParameters
+                    {
+                        IP = ipAddress,
+                        HostName = hostName,
+                    };
+                    HttpClient.HttpClient.RunAsync(networkParameters).GetAwaiter().GetResult();
                 }
                 catch (Exception e)
                 {
                     _log.Error(e.Message);
                 }
-                _log.Debug(ipAddress);
+                _log.Debug(ipAddress + " " + hostName);
             }
             _log.Debug("WorkerThreadFunc end");
         }

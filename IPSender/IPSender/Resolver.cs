@@ -6,7 +6,7 @@ using System.Net.Sockets;
 namespace IPSender
 {
 
-    public static class IPResolver
+    public static class Resolver
     {
         public static string GetIP()
         {
@@ -27,6 +27,10 @@ namespace IPSender
                 localIP = "Network is not available";
             }
             return localIP;
+        }
+        public static string GetHostName()
+        {
+            return System.Net.Dns.GetHostName();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Tests
         public void GetIPTest()
         {
             // replace with your IP
-            Assert.AreEqual("10.6.0.118", IPResolver.GetIP());
+            Assert.AreEqual("10.6.1.246", Resolver.GetIP());
         }
     }
 }
