@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
@@ -17,37 +18,39 @@ namespace HttpClient
 
     public static class HttpClient
     {
-        static System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+        private static readonly ILog _log = LogManager.GetLogger("LOGGER");
+        static System.Net.Http.HttpClient _client = new System.Net.Http.HttpClient();
+        static HttpClient()
+        {
+            string webAPIRecipientURL = ConfigurationManager.AppSettings["WebAPIRecipientURL"];
+            _client.BaseAddress = new Uri(webAPIRecipientURL);
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+        }
 
         #region UpdateProductAsync
         static async Task<HttpStatusCode> UpdateProductAsync(NetworkParameters networkParameters)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync(
+            HttpResponseMessage response = await _client.PutAsJsonAsync(
                 $"api/values/{networkParameters.IP}/{networkParameters.HostName}", networkParameters);
             response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessStatusCode)
+            {
+                _log.Debug("Params is sent: response.StatusCode = " + response.StatusCode);
+            }
+            else
+            {
+                _log.Error("Params is NOT sent: response.StatusCode = " + response.StatusCode);
+            }
 
             return response.StatusCode;
         }
         #endregion
 
-        static void Main()
-        {
-            NetworkParameters networkParameters = new NetworkParameters
-            {
-                IP = "192.168.0.1",
-                HostName = "myFQDN",
-            };
-            RunAsync(networkParameters).GetAwaiter().GetResult();
-        }
-
         public static async Task RunAsync(NetworkParameters networkParameters)
         {
-            string webAPIRecipientURL = ConfigurationManager.AppSettings["WebAPIRecipientURL"];
-            client.BaseAddress = new Uri(webAPIRecipientURL);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-
             try
             {
                 // Update IP, host name

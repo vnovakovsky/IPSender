@@ -26,11 +26,10 @@ namespace WebAPIServer.Controllers
         {
         }
 
-        // PUT api/values/5
-        //public void Put(int ip, /*[FromBody]*/string hostName)
+        // PUT api/values/ip/hostName
         public void Put(string ip, string hostName)
         {
-            //WriteLine(ip);
+            System.Media.SystemSounds.Beep.Play();
         }
 
         // DELETE api/values/5
